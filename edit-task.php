@@ -4,18 +4,24 @@
     $sql = "SELECT title, description, completed FROM tasks WHERE id=?";
     $sth = $dbh->prepare($sql);
     $sth->execute([$task_id]);
-    $info = $sth->fetch();
-    $title = $info["title"];
-    $description = $info["description"];
+    $info = $sth->fetch(PDO::FETCH_ASSOC);
+
+    if (!$info) {
+        header('Location: index.php?error=task_not_found');
+        exit();
+    }
+
+    $title = htmlspecialchars($info["title"]);
+    $description = htmlspecialchars($info["description"]);
     $completed = $info["completed"];
-?> 
+?>
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
-    <link href="output.css" rel="stylesheet">
+    <title>Edit Task</title>
+    <link href="index.css" rel="stylesheet">
 </head>
 <body>
     <form action="./api/update-task.php" method="post" class="w-[100vw] h-[100vh] flex flex-col gap-5 justify-center items-center">
@@ -26,8 +32,8 @@
         </label>
         <label for="description">
             Description
-            <textarea 
-                id="description" name="description" 
+            <textarea
+                id="description" name="description"
                 rows="5" ><?php echo $description?></textarea>
         </label>
         <label for="completed">

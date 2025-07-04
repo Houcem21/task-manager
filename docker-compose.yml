@@ -1,0 +1,39 @@
+version: '3.8' # Specify the Docker Compose file format version
+
+services:
+  # Web service (your PHP application)
+  web:
+    build: . # Build the image using the Dockerfile in the current directory
+    ports:
+      - "8080:80" # Map host port 8080 to container port 80 (Apache)
+    volumes:
+      - ./:/var/www/html # Mount your local project directory into the container
+    depends_on:
+      db:
+        condition: service_healthy # Ensure the web service waits until the db service is healthy
+    environment:
+      APP_ENV: development
+
+  # Database service (MySQL)
+  db:
+    image: mysql:8.0 # Use the official MySQL 8.0 image
+    command: --default-authentication-plugin=mysql_native_password # IMPORTANT: Add this line for compatibility
+    environment:
+      MYSQL_ROOT_PASSWORD: root # IMPORTANT: Change this to a strong password
+      MYSQL_DATABASE: task-manager # Your database name
+      MYSQL_USER: crud_user # Your database user
+      MYSQL_PASSWORD: root # IMPORTANT: Change this to a strong password
+    volumes:
+      - db_data:/var/lib/mysql # Persist database data to a named volume
+    ports:
+      - "3306:3306" # Expose MySQL port (optional, but useful for connecting with a client)
+    healthcheck: # Add a health check for the database service
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-u", "root", "-pMyStrongSecurePass123!"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 30s # Give MySQL some time to start up before checking
+
+# Define named volumes for data persistence
+volumes:
+  db_data: # This volume will store your MySQL data, so it persists even if containers are removed

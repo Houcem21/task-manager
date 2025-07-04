@@ -1,17 +1,13 @@
 <?php
-    // Connect to db
-    include '../db.php';
-    try {
-        // set the PDO error mode to exception
-        $dbh->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
-        $stmt = $dbh->query("SELECT * FROM tasks");
-        header('Content-Type: application/json');
-        $tasks = $stmt->fetchAll(PDO::FETCH_ASSOC);
-        echo json_encode($tasks);     
-    } catch (PDOException $e) {
-        echo $sql . "<br/>" . $e->getMessage();;
-    }
+header('Content-Type: application/json');
+include '../db.php';
 
-    //close off
-    $dbh= null;
+try {
+    $stmt = $dbh->query("SELECT * FROM tasks ORDER BY created_at DESC");
+    $tasks = $stmt->fetchAll(PDO::FETCH_ASSOC);
+    echo json_encode($tasks);
+} catch (PDOException $e) {
+    error_log("Error fetching tasks: " . $e->getMessage());
+    echo json_encode(["error" => "Failed to fetch tasks."]);
+}
 ?>

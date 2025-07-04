@@ -3,9 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
+    <title>New Task</title>
     <link href="index.css" rel="stylesheet" />
-    <link href="output.css" rel="stylesheet">
 </head>
 <body>
     <form action="./api/create-task.php" method="post" class="w-[100vw] h-[100vh] flex flex-col gap-5 justify-center text-center items-center">
